@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enigma Chipper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f4f8;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 100%;
+            width: 100%;
+            max-width: 500px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h2 {
+            color: #2a9d8f;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .form-group label {
+            flex: 1;
+            font-size: 16px;
+            color: #264653;
+            margin-right: 10px;
+            text-align: right;
+        }
+        .form-group input {
+            flex: 2;
+            padding: 10px;
+            border: 1px solid #b0bec5;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #264653;
+            background-color: #e0f7fa;
+        }
+        input[readonly] {
+            background-color: #f0f4f8;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2a9d8f;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #21867a;
+        }
+
+        @media (max-width: 480px) {
+            .form-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-group label {
+                text-align: left;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>ENIGMA CHIPPER</h2>
+
+    <div class="form-group">
+        <label for="plainText">Textnya Bro   :)</label>
+        <input type="text" id="plainText" placeholder="Masukkan teks!!">
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password :)</label>
+        <input type="password" id="password" placeholder="Masukkan password">
+    </div>
+
+    <div class="form-group">
+        <label for="cipherText">Hasil>></label>
+        <input type="text" id="cipherText" placeholder="Hasil enkripsi/dekripsi" readonly>
+    </div>
+
+    <br>
+    <button onclick="encryptText()">Enkripsi</button>
+    <button onclick="decryptText()">Dekripsi</button>
+    <button onclick="clearText()">Clear</button>
+    <button onclick="restart()">Restart</button>
+</div>
+
+<script>
+    function encryptText() {
+        let plainText = document.getElementById("plainText").value;
+        let password = document.getElementById("password").value;
+
+        if (plainText === "" || password === "") {
+            alert("Masukkan Plain Text dan Password!");
+            return;
+        }
+
+        let cipherText = enigmaCipher(plainText, password, true);
+        document.getElementById("cipherText").value = btoa(cipherText);
+    }
+
+    function decryptText() {
+        let cipherText = document.getElementById("cipherText").value;
+        let password = document.getElementById("password").value;
+
+        if (cipherText === "" || password === "") {
+            alert("Masukkan Text dan Password!");
+            return;
+        }
+
+        try {
+            let decodedCipherText = atob(cipherText);
+            let plainText = enigmaCipher(decodedCipherText, password, false);
+            document.getElementById("cipherText").value = plainText;
+        } catch (e) {
+            alert("Format teks enkripsi tidak valid!");
+        }
+    }
+
+    function enigmaCipher(text, password, isEncrypt) {
+        let result = '';
+        let passIndex = 0;
+
+        for (let i = 0; i < text.length; i++) {
+            let charCode = text.charCodeAt(i);
+            let passCharCode = password.charCodeAt(passIndex % password.length);
+
+            if (isEncrypt) {
+                result += String.fromCharCode((charCode + passCharCode) % 256);
+            } else {
+                result += String.fromCharCode((charCode - passCharCode + 256) % 256);
+            }
+
+            passIndex++;
+        }
+
+        return result;
+    }
+
+    function clearText() {
+        document.getElementById("plainText").value = "";
+        document.getElementById("password").value = "";
+        document.getElementById("cipherText").value = "";
+    }
+
+    function restart() {
+        location.reload();
+    }
+</script>
+
+</body>
+</html>
